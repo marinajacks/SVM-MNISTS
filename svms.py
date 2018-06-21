@@ -56,8 +56,8 @@ def get_labels(filename):
 
 
 def train():
-    train_data = get_images("D:\\project\\SVM-MNIST\\train_data\\train-images.idx3-ubyte", length=60000)
-    train_labels = get_labels('D:\\project\\SVM-MNIST\\train_data\\train-labels.idx1-ubyte')
+    train_data = get_images("D:\\project\\SVM-MNISTS\\train_data\\train-images.idx3-ubyte", length=60000)
+    train_labels = get_labels('D:\\project\\SVM-MNISTS\\train_data\\train-labels.idx1-ubyte')
     
     clf = svm.SVC()
     train_data = np.asmatrix(train_data[:(60000*784)]).reshape(60000, 784)
@@ -78,8 +78,8 @@ def test(filename):
     # load the model from disk
     clf = pickle.load(open(filename, 'rb'))
     
-    test_data=get_images('D:\\project\\SVM-MNIST\\test_data\\t10k-images.idx3-ubyte',True)  # True: for full length
-    test_labels=get_labels('D:\\project\\SVM-MNIST\\test_data\\t10k-labels.idx1-ubyte')
+    test_data=get_images('D:\\project\\SVM-MNISTS\\test_data\\t10k-images.idx3-ubyte',True)  # True: for full length
+    test_labels=get_labels('D:\\project\\SVM-MNISTS\\test_data\\t10k-labels.idx1-ubyte')
     
     test_data = np.asmatrix(test_data).reshape(10000, 784)
     print("测试进行中......")
