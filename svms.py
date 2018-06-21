@@ -66,7 +66,7 @@ def train():
     clf.fit(train_data, train_labels[:60000])
     print("模型训练完成......")
     # save the model to disk
-    filename = 'D:\\project\\SVM-MNIST\\finalized_model_50000_f.sav'
+    filename = 'D:\\project\\SVM-MNISTS\\finalized_model_50000_f.sav'
     pickle.dump(clf, open(filename, 'wb'))
     print("Succeed!")
     return filename
@@ -92,7 +92,7 @@ def test(filename):
 if __name__=="__main__":
     filename=train()
     result=test(filename)
-    print("训练的精确度是: ",100*result+'%')
+    print("训练的精确度是: ",result)
     
     
     
