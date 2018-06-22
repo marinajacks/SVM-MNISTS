@@ -9,6 +9,8 @@ import binascii
 from sklearn import svm
 import pickle
 import numpy as np
+import time
+import matplotlib.pyplot  as plt
 
 
 
@@ -55,11 +57,16 @@ def get_labels(filename):
 
 
 
-def train():
-    train_data = get_images("D:\\project\\SVM-MNISTS\\train_data\\train-images.idx3-ubyte", length=60000)
-    train_labels = get_labels('D:\\project\\SVM-MNISTS\\train_data\\train-labels.idx1-ubyte')
-    
-    clf = svm.SVC()
+def train(c):
+    #train_data = get_images("D:\\project\\SVM-MNISTS\\train_data\\train-images.idx3-ubyte", length=60000) #win
+    train_data=get_images('/Users/macbook/documents/project/SVM-MNISTS/train_data/train-images.idx3-ubyte', length=60000)  #mac
+    #train_labels = get_labels('D:\\project\\SVM-MNISTS\\train_data\\train-labels.idx1-ubyte')  #win
+    train_labels=get_labels('/Users/macbook/documents/project/SVM-MNISTS/train_data/train-labels.idx1-ubyte') #mac
+   # clf = svm.SVC()
+    #clf=svm.SVC(C=0.8,  gamma=20)
+    clf=svm.SVC(C=c, kernel='rbf', gamma=0.03)
+    #clf = svm.SVC(C=0.8, kernel='rbf', gamma=20, decision_function_shape='ovr') 
+    #在这个地方使用
     train_data = np.asmatrix(train_data[:(60000*784)]).reshape(60000, 784)
     
     print("模型训练中......")
@@ -78,9 +85,10 @@ def test(filename):
     # load the model from disk
     clf = pickle.load(open(filename, 'rb'))
     
-    test_data=get_images('D:\\project\\SVM-MNISTS\\test_data\\t10k-images.idx3-ubyte',True)  # True: for full length
-    test_labels=get_labels('D:\\project\\SVM-MNISTS\\test_data\\t10k-labels.idx1-ubyte')
-    
+   # test_data=get_images('D:\\project\\SVM-MNISTS\\test_data\\t10k-images.idx3-ubyte',True)  # True: for full length #win
+    test_data=get_images('/Users/macbook/documents/project/SVM-MNISTS/test_data/t10k-images.idx3-ubyte',True)  #mac
+   # test_labels=get_labels('D:\\project\\SVM-MNISTS\\test_data\\t10k-labels.idx1-ubyte')  #win
+    test_labels=get_labels('/Users/macbook/documents/project/SVM-MNISTS/test_data/t10k-labels.idx1-ubyte')  #mac
     test_data = np.asmatrix(test_data).reshape(10000, 784)
     print("测试进行中......")
     result = clf.score(test_data, test_labels)
@@ -90,9 +98,17 @@ def test(filename):
 
 
 if __name__=="__main__":
-    filename=train()
-    result=test(filename)
-    print("训练的精确度是: ",result)
+    c=np.linspace(20,100,5)
+    results=[]
+    for i in c:
+        start = time.clock()
+        filename=train(c)
+        result=test(filename)
+        print("训练的精确度是: ",result)
+        results.append(result)
+        end = time.clock()
+        print (end-start)
+    plt.scatter(c,result)
     
     
     
