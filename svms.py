@@ -57,14 +57,14 @@ def get_labels(filename):
 
 
 
-def train(c):
+def train(g):
     #train_data = get_images("D:\\project\\SVM-MNISTS\\train_data\\train-images.idx3-ubyte", length=60000) #win
     train_data=get_images('/Users/macbook/documents/project/SVM-MNISTS/train_data/train-images.idx3-ubyte', length=60000)  #mac
     #train_labels = get_labels('D:\\project\\SVM-MNISTS\\train_data\\train-labels.idx1-ubyte')  #win
     train_labels=get_labels('/Users/macbook/documents/project/SVM-MNISTS/train_data/train-labels.idx1-ubyte') #mac
    # clf = svm.SVC()
     #clf=svm.SVC(C=0.8,  gamma=20)
-    clf=svm.SVC(C=c, kernel='rbf', gamma=0.03)
+    clf=svm.SVC(C=100.0, kernel='rbf', gamma=g)
     #clf = svm.SVC(C=0.8, kernel='rbf', gamma=20, decision_function_shape='ovr') 
     #在这个地方使用
     train_data = np.asmatrix(train_data[:(60000*784)]).reshape(60000, 784)
@@ -97,18 +97,20 @@ def test(filename):
     return result
 
 
-if __name__=="__main__":
-    c=np.linspace(20,100,5)
+if __name__=="__main__": 
+    g=np.linspace(0.1,1,10)
+    g=g.tolist()
     results=[]
-    for i in c:
+    for i in g:
         start = time.clock()
-        filename=train(c)
+        filename=train(i)
         result=test(filename)
         print("训练的精确度是: ",result)
         results.append(result)
         end = time.clock()
         print (end-start)
-    plt.scatter(c,result)
+    plt.scatter(g,results)
+  
     
     
     
