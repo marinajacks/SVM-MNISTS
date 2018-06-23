@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 """
-Created on Thu Jun 21 21:11:37 2018
+Created on Fri Jun 22 10:24:45 2018
 
 @author: hello
+这个用来查看调参的效果
 """
 
 import binascii
 from sklearn import svm
+from sklearn.model_selection import GridSearchCV
 import pickle
 import numpy as np
 
@@ -59,11 +61,23 @@ def train():
     train_data = get_images("D:\\project\\SVM-MNISTS\\train_data\\train-images.idx3-ubyte", length=60000)
     train_labels = get_labels('D:\\project\\SVM-MNISTS\\train_data\\train-labels.idx1-ubyte')
     
-  # clf = svm.SVC()
     clf = svm.SVC()
     train_data = np.asmatrix(train_data[:(60000*784)]).reshape(60000, 784)
     
     print("模型训练中......")
+    '''
+    parameters = [
+    {
+        'C': [1, 3, 5, 7, 9, 11, 13, 15, 17, 19],
+        'gamma': [0.00001, 0.0001, 0.001, 0.1, 1, 10, 100, 1000],
+        'kernel': ['rbf']
+    },
+    {
+        'C': [1, 3, 5, 7, 9, 11, 13, 15, 17, 19],
+        'kernel': ['linear']
+    }]
+    clf = GridSearchCV(clf, parameters, cv=5, n_jobs=8)
+    '''
     clf.fit(train_data, train_labels[:60000])
     print("模型训练完成......")
     # save the model to disk
