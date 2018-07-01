@@ -12,9 +12,28 @@ import numpy as np
 import time
 import matplotlib.pyplot  as plt
 
+#iris数据集的数据加载
+def loadiris(p):
+    f=open(p,'r')
+    lines=f.readlines()
+    datamat=[]
+    for line in lines:
+        a=[]
+        for i in range(len(line.split(','))-1):
+            a.append(float(line.split(',')[i]))
+        datamat.append(a)
+    return np.array(datamat)
+'''获取数据集的标签信息'''       
+def loadflags(p):
+    f=open(p,'r')
+    lines=f.readlines()
+    flags=[]
+    for line in lines:
+        flags.append(line.strip().split(',')[-1])
+    return flags
 
 
-# Input Images
+# Input Images,这个是MNIST数据集的数据数字信息
 def get_images(filename, bol=False, length=10000):
     # Parameters -
     #  1. filename - FORMAT: filepath/filename
@@ -37,7 +56,7 @@ def get_images(filename, bol=False, length=10000):
     return data
 
 
-# Input Lables
+# Input Lables 这是MNIST数据集的标签处理函数
 def get_labels(filename):
     # Parameters -
     #  1. filename - FORMAT: filepath/filename
@@ -57,23 +76,26 @@ def get_labels(filename):
 
 
 
-def train(g):
-    #train_data = get_images("D:\\project\\SVM-MNISTS\\train_data\\train-images.idx3-ubyte", length=60000) #win
-    train_data=get_images('/Users/macbook/documents/project/SVM-MNISTS/train_data/train-images.idx3-ubyte', length=60000)  #mac
-    #train_labels = get_labels('D:\\project\\SVM-MNISTS\\train_data\\train-labels.idx1-ubyte')  #win
-    train_labels=get_labels('/Users/macbook/documents/project/SVM-MNISTS/train_data/train-labels.idx1-ubyte') #mac
-   # clf = svm.SVC()
+def train():
+    train_data = get_images("D:\\project\\SVM-MNISTS\\train_data\\train-images.idx3-ubyte", length=60000) #win
+    #train_data=get_images('/Users/macbook/documents/project/SVM-MNISTS/train_data/train-images.idx3-ubyte', length=60000)  #mac
+    train_labels = get_labels('D:\\project\\SVM-MNISTS\\train_data\\train-labels.idx1-ubyte')  #win
+    #train_labels=get_labels('/Users/macbook/documents/project/SVM-MNISTS/train_data/train-labels.idx1-ubyte') #mac
+  #  clf = svm.SVC(C=100.0,kernel='sigmoid',gamma=0.03)
+ #   clf=svm.SVC()
+    clf=svm.SVC(kernel='linear')
+   # clf = svm.SVC(kernel='poly',degree =1,gamma=0.03)
     #clf=svm.SVC(C=0.8,  gamma=20)
-    clf=svm.SVC(C=100.0, kernel='rbf', gamma=g)
+   # clf=svm.SVC(C=100.0, kernel='rbf', gamma=g)
     #clf = svm.SVC(C=0.8, kernel='rbf', gamma=20, decision_function_shape='ovr') 
     #在这个地方使用
     train_data = np.asmatrix(train_data[:(60000*784)]).reshape(60000, 784)
     
     print("模型训练中......")
-    clf.fit(train_data, train_labels[:60000])
+    clf.fit(train_data, train_labels)#[:60000])
     print("模型训练完成......")
     # save the model to disk
-    filename = 'D:\\project\\SVM-MNISTS\\finalized_model_50000_f.sav'
+    filename = 'D:\\project\\SVM-MNISTS\\finalized_model_50000_f_1.sav'
     pickle.dump(clf, open(filename, 'wb'))
     print("Succeed!")
     return filename
@@ -85,10 +107,10 @@ def test(filename):
     # load the model from disk
     clf = pickle.load(open(filename, 'rb'))
     
-   # test_data=get_images('D:\\project\\SVM-MNISTS\\test_data\\t10k-images.idx3-ubyte',True)  # True: for full length #win
-    test_data=get_images('/Users/macbook/documents/project/SVM-MNISTS/test_data/t10k-images.idx3-ubyte',True)  #mac
-   # test_labels=get_labels('D:\\project\\SVM-MNISTS\\test_data\\t10k-labels.idx1-ubyte')  #win
-    test_labels=get_labels('/Users/macbook/documents/project/SVM-MNISTS/test_data/t10k-labels.idx1-ubyte')  #mac
+    test_data=get_images('D:\\project\\SVM-MNISTS\\test_data\\t10k-images.idx3-ubyte',True)  # True: for full length #win
+   # test_data=get_images('/Users/macbook/documents/project/SVM-MNISTS/test_data/t10k-images.idx3-ubyte',True)  #mac
+    test_labels=get_labels('D:\\project\\SVM-MNISTS\\test_data\\t10k-labels.idx1-ubyte')  #win
+  #  test_labels=get_labels('/Users/macbook/documents/project/SVM-MNISTS/test_data/t10k-labels.idx1-ubyte')  #mac
     test_data = np.asmatrix(test_data).reshape(10000, 784)
     print("测试进行中......")
     result = clf.score(test_data, test_labels)
@@ -98,6 +120,13 @@ def test(filename):
 
 
 if __name__=="__main__": 
+    start = time.clock()
+    filename=train()
+    result=test(filename)
+    print("训练的精确度是: ",result)
+    end = time.clock()
+    print (end-start)
+    '''
     g=np.linspace(0.1,1,10)
     g=g.tolist()
     results=[]
@@ -110,7 +139,7 @@ if __name__=="__main__":
         end = time.clock()
         print (end-start)
     plt.scatter(g,results)
-  
+  '''
     
     
     

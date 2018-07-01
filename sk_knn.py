@@ -18,6 +18,8 @@ import numpy as np
 import matplotlib.pyplot  as plt
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
+from sklearn import tree
+from sklearn.neural_network import MLPClassifier
 
 #iris数据集的数据加载
 def loadiris(p):
@@ -84,40 +86,36 @@ def get_labels(filename):
 
 
 if __name__=='__main__':
+    #这部分的数据是训练数据
     train_data = get_images("D:\\project\\SVM-MNISTS\\train_data\\train-images.idx3-ubyte", length=60000) #win
     train_labels = get_labels('D:\\project\\SVM-MNISTS\\train_data\\train-labels.idx1-ubyte')  #win
-    
-    
     train_data = np.asmatrix(train_data[:(60000*784)]).reshape(60000, 784)
-    
-    print("模型训练中......")
-    neigh = KNeighborsClassifier(n_neighbors=6)
-    neigh.fit(train_data, train_labels) 
-    
-    print("模型训练完成......")
-    print("Succeed!")
-    print("模型训练完成......")
+    #这部分的数据是训练数据
     test_data=get_images('D:\\project\\SVM-MNISTS\\test_data\\t10k-images.idx3-ubyte',True)  # True: for full length #win
     test_labels=get_labels('D:\\project\\SVM-MNISTS\\test_data\\t10k-labels.idx1-ubyte')  #win
     test_data = np.asmatrix(test_data).reshape(10000, 784)
     
+    
+    print("模型训练中......")#这部分模型是KNN模型
+    neigh = KNeighborsClassifier(n_neighbors=3)
+    neigh.fit(train_data, train_labels) 
+    neigh.score(test_data, test_labels)
+    
+    #这部分是朴素贝叶斯的训练模型
     gnb = GaussianNB()
-    y_pred = gnb.fit(train_data, train_labels).predict(test_data)
-    
-    
-    print("测试进行中......")
-    result = neigh.score(test_data, test_labels)
-    print("测试完成......")
-    print("Accuracy: ",result)
+    clf = gnb.fit(train_data, train_labels)
+    clf.score(test_data, test_labels)
 
-    from sklearn import tree
 
+    #这部分是决策树模型
     clf = tree.DecisionTreeClassifier()
     clf = clf.fit(train_data, train_labels)
     clf.score(test_data, test_labels)
-    from sklearn.neural_network import MLPClassifier
+    
+    
+    #这部分是深度学习模型,神经网络模型
     clf = MLPClassifier(solver='lbfgs', alpha=1e-5,hidden_layer_sizes=(5, 2), random_state=1)
     clf = clf.fit(train_data, train_labels)
-    clf.score(test_data, test_labels)
+    result=clf.score(test_data, test_labels)
     
     

@@ -1,20 +1,39 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Jun 22 10:24:45 2018
+Created on Thu Jun 21 21:11:37 2018
 
 @author: hello
-这个用来查看调参的效果
 """
 
 import binascii
 from sklearn import svm
-from sklearn.model_selection import GridSearchCV
 import pickle
 import numpy as np
+import time
+import matplotlib.pyplot  as plt
+
+#iris数据集的数据加载
+def loadiris(p):
+    f=open(p,'r')
+    lines=f.readlines()
+    datamat=[]
+    for line in lines:
+        a=[]
+        for i in range(len(line.split(','))-1):
+            a.append(float(line.split(',')[i]))
+        datamat.append(a)
+    return np.array(datamat)
+'''获取数据集的标签信息'''       
+def loadflags(p):
+    f=open(p,'r')
+    lines=f.readlines()
+    flags=[]
+    for line in lines:
+        flags.append(line.strip().split(',')[-1])
+    return flags
 
 
-
-# Input Images
+# Input Images,这个是MNIST数据集的数据数字信息
 def get_images(filename, bol=False, length=10000):
     # Parameters -
     #  1. filename - FORMAT: filepath/filename
@@ -37,7 +56,7 @@ def get_images(filename, bol=False, length=10000):
     return data
 
 
-# Input Lables
+# Input Lables 这是MNIST数据集的标签处理函数
 def get_labels(filename):
     # Parameters -
     #  1. filename - FORMAT: filepath/filename
@@ -57,46 +76,39 @@ def get_labels(filename):
 
 
 
-def train():
-    train_data = get_images("D:\\project\\SVM-MNISTS\\train_data\\train-images.idx3-ubyte", length=60000)
-    train_labels = get_labels('D:\\project\\SVM-MNISTS\\train_data\\train-labels.idx1-ubyte')
-    
+def train(train_data,train_labels,filename,g):
+   # train_data = get_images("D:\\project\\SVM-MNISTS\\train_data\\train-images.idx3-ubyte", length=60000) #win
+    #train_data=get_images('/Users/macbook/documents/project/SVM-MNISTS/train_data/train-images.idx3-ubyte', length=60000)  #mac
+  #  train_labels = get_labels('D:\\project\\SVM-MNISTS\\train_data\\train-labels.idx1-ubyte')  #win
+    #train_labels=get_labels('/Users/macbook/documents/project/SVM-MNISTS/train_data/train-labels.idx1-ubyte') #mac
     clf = svm.SVC()
-    train_data = np.asmatrix(train_data[:(60000*784)]).reshape(60000, 784)
+    #clf=svm.SVC(C=0.8,  gamma=20)
+   # clf=svm.SVC(C=100.0, kernel='rbf', gamma=g)
+    #clf = svm.SVC(C=0.8, kernel='rbf', gamma=20, decision_function_shape='ovr') 
+    #在这个地方使用
+   # train_data = np.asmatrix(train_data[:(60000*784)]).reshape(60000, 784)
     
     print("模型训练中......")
-    '''
-    parameters = [
-    {
-        'C': [1, 3, 5, 7, 9, 11, 13, 15, 17, 19],
-        'gamma': [0.00001, 0.0001, 0.001, 0.1, 1, 10, 100, 1000],
-        'kernel': ['rbf']
-    },
-    {
-        'C': [1, 3, 5, 7, 9, 11, 13, 15, 17, 19],
-        'kernel': ['linear']
-    }]
-    clf = GridSearchCV(clf, parameters, cv=5, n_jobs=8)
-    '''
-    clf.fit(train_data, train_labels[:60000])
+    clf.fit(train_data, train_labels)#[:60000])
     print("模型训练完成......")
     # save the model to disk
-    filename = 'D:\\project\\SVM-MNISTS\\finalized_model_50000_f.sav'
+    #filename = 'D:\\project\\SVM-MNISTS\\finalized_model_50000_f.sav'
     pickle.dump(clf, open(filename, 'wb'))
     print("Succeed!")
-    return filename
+    #return filename
 
 
-def test(filename):
+def test(test_data,test_labels,filename):
    # filename = 'D:\\project\\SVM-MNIST\\finalized_model_50000_f.sav'
 
     # load the model from disk
     clf = pickle.load(open(filename, 'rb'))
     
-    test_data=get_images('D:\\project\\SVM-MNISTS\\test_data\\t10k-images.idx3-ubyte',True)  # True: for full length
-    test_labels=get_labels('D:\\project\\SVM-MNISTS\\test_data\\t10k-labels.idx1-ubyte')
-    
-    test_data = np.asmatrix(test_data).reshape(10000, 784)
+   # test_data=get_images('D:\\project\\SVM-MNISTS\\test_data\\t10k-images.idx3-ubyte',True)  # True: for full length #win
+   # test_data=get_images('/Users/macbook/documents/project/SVM-MNISTS/test_data/t10k-images.idx3-ubyte',True)  #mac
+   # test_labels=get_labels('D:\\project\\SVM-MNISTS\\test_data\\t10k-labels.idx1-ubyte')  #win
+   # test_labels=get_labels('/Users/macbook/documents/project/SVM-MNISTS/test_data/t10k-labels.idx1-ubyte')  #mac
+    #test_data = np.asmatrix(test_data).reshape(10000, 784)
     print("测试进行中......")
     result = clf.score(test_data, test_labels)
     print("测试完成......")
@@ -104,10 +116,38 @@ def test(filename):
     return result
 
 
-if __name__=="__main__":
-    filename=train()
-    result=test(filename)
-    print("训练的精确度是: ",result)
+if __name__=="__main__": 
+   # train_data = get_images("D:\\project\\SVM-MNISTS\\train_data\\train-images.idx3-ubyte", length=60000) #win
+    train_data=loadiris('D:\\project\\SVM-MNISTS\\\iris\\trainiris.txt')
+    train_labels=loadflags('D:\\project\\SVM-MNISTS\\\iris\\trainiris.txt')
+    #train_data=get_images('/Users/macbook/documents/project/SVM-MNISTS/train_data/train-images.idx3-ubyte', length=60000)  #mac
+   # train_labels = get_labels('D:\\project\\SVM-MNISTS\\train_data\\train-labels.idx1-ubyte')  #win
+    #train_labels=get_labels('/Users/macbook/documents/project/SVM-MNISTS/train_data/train-labels.idx1-ubyte') #mac
+    filename = 'D:\\project\\SVM-MNISTS\\finalized_model_f1.sav'
+    
+    #test_data=get_images('/Users/macbook/documents/project/SVM-MNISTS/test_data/t10k-images.idx3-ubyte',True)  #mac
+   # test_labels=get_labels('D:\\project\\SVM-MNISTS\\test_data\\t10k-labels.idx1-ubyte')  #win
+   # test_labels=get_labels('/Users/macbook/documents/project/SVM-MNISTS/test_data/t10k-labels.idx1-ubyte')  #mac
+   
+    test_data=loadiris('D:\\project\\SVM-MNISTS\\\iris\\testiris.txt')
+    test_labels=loadflags('D:\\project\\SVM-MNISTS\\\iris\\testiris.txt')
+    train(train_data,train_labels,filename,0.03)
+    
+    test(test_data,test_labels,filename)
+    
+    g=np.linspace(0.1,1,10)
+    g=g.tolist()
+    results=[]
+    for i in g:
+        start = time.clock()
+        filename=train(train_data,train_labels,i)
+        result=test(test_data,test_labels,filename)
+        print("训练的精确度是: ",result)
+        results.append(result)
+        end = time.clock()
+        print (end-start)
+    plt.scatter(g,results)
+  
     
     
     
