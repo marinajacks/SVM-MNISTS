@@ -86,16 +86,21 @@ def train():
     clf=svm.SVC(kernel='linear')
    # clf = svm.SVC(kernel='poly',degree =1,gamma=0.03)
     #clf=svm.SVC(C=0.8,  gamma=20)
-   # clf=svm.SVC(C=100.0, kernel='rbf', gamma=g)
+
+    clf=svm.SVC(C=100.0, kernel='rbf', gamma=0.4)
     #clf = svm.SVC(C=0.8, kernel='rbf', gamma=20, decision_function_shape='ovr') 
     #在这个地方使用
     train_data = np.asmatrix(train_data[:(60000*784)]).reshape(60000, 784)
+    #train_data=datamats  #iris数据集测试结果
+    #train_labels=flags
     
     print("模型训练中......")
     clf.fit(train_data, train_labels)#[:60000])
     print("模型训练完成......")
     # save the model to disk
-    filename = 'D:\\project\\SVM-MNISTS\\finalized_model_50000_f_1.sav'
+
+    filename = 'D:\\project\\SVM-MNISTS\\finalized_model_50000_f.sav'
+    #filename = '/Users/macbook/documents/project/Machine-Learning/PCA/finalized_model_f.sav'
     pickle.dump(clf, open(filename, 'wb'))
     print("Succeed!")
     return filename
@@ -113,6 +118,8 @@ def test(filename):
   #  test_labels=get_labels('/Users/macbook/documents/project/SVM-MNISTS/test_data/t10k-labels.idx1-ubyte')  #mac
     test_data = np.asmatrix(test_data).reshape(10000, 784)
     print("测试进行中......")
+    #test_data=loadiris(p1)
+   # test_labels=loadflags(p1)
     result = clf.score(test_data, test_labels)
     print("测试完成......")
     #print("Accuracy: ",result)
